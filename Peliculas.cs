@@ -9,41 +9,53 @@ using System.Xml.Serialization;
 
 namespace P2.Colecciones
 {
-    internal class Peliculas
-    {
-        //internal resenas [] Reseñas;
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+    public class Peliculas
+{
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public ObjectId Id { get; set; }
 
-        public ObjectId Id { get; set; }
+    [BsonElement("Nombre")]
+    public string Nombre { get; set; }
 
-        [BsonElement("Nombre")]
-        public string Nombre{ get; set; }
+    [BsonElement("Duracion_minutos")]
+    public int Duracion_minutos { get; set; }
 
-        [BsonElement("Genero")]
-        public string Genero { get; set; }
+    [BsonElement("Genero")]
+    public string[] Genero { get; set; }
 
-        [BsonElement("Duracion")]
-        public int Duracion { get; set; }
+    [BsonElement("Clasificacion")]
+    public string Clasificacion { get; set; }
 
-        [BsonElement("Director")]
-        public string Director { get; set; }
+    [BsonElement("Tipo_sala")]
+    public string Tipo_sala { get; set; }
 
-        [BsonElement("Sinopsis")]
-        public string Sinopsis { get; set; }
-        
-        [BsonElement("reseñas")]
-        public resenas[] reseñas { get; set; }
-    } 
-    internal class VentaBoletos
-    {
-        [BsonElement("usuario")]
-        public string usuario { get; set; }
+    [BsonElement("Sala")]
+    public int Sala { get; set; }
+}
 
-        [BsonElement("puntaje")]
-        public double puntaje { get; set; }
+public class VentaBoletos
+{
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public ObjectId Id { get; set; }
 
-        [BsonElement("reseña")]
-        public string reseña { get; set; }
-    } 
+    [BsonElement("Tipo_sala")]
+    public string Tipo_sala { get; set; }
+
+    [BsonElement("Nombre_cliente")]
+    public string Nombre_cliente { get; set; }
+
+    [BsonElement("Num_tarjeta")]
+    public string Num_tarjeta { get; set; }
+
+    [BsonElement("Pelicula")]
+    public string Pelicula { get; set; }
+
+    [BsonElement("fecha")]
+    public string fecha { get; set; }
+
+    [BsonElement("Sala")]
+    public int Sala { get; set; }
+}
 }
