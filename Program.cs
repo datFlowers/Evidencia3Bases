@@ -35,12 +35,13 @@ namespace MyApp // Note: actual namespace depends on the project name.
                 Console.WriteLine("================================");
                 Console.WriteLine("1. Consultar películas");
                 Console.WriteLine("2. Consultar Ventas");
-                Console.WriteLine("3. Buscar Información Modelando Relación");
+                Console.WriteLine("3. Buscar información de películas y ventas relacionadas");
                 Console.WriteLine("4. Actualizar película de venta");
-                Console.WriteLine("5. Eliminar película de venta");
+                Console.WriteLine("5. Eliminar venta de película");
                 Console.WriteLine("6. Salir del programa");
                 Console.WriteLine("================================\n");
                 Console.Write("Seleccione una opción: ");
+
                 string opcion = Console.ReadLine();
 
                 switch (opcion)
@@ -54,15 +55,15 @@ namespace MyApp // Note: actual namespace depends on the project name.
                         break;
                     
                     case "3":
-                        
+                        Relacion();
                         break;
                     
                     case "4":
-                        Console.WriteLine("Saliendo del programa...");
+                        ActualizarPelicula();
                         break;
                     
                     case "5":
-                        Console.WriteLine("Saliendo del programa...");
+                        EliminarVentaPelicula();
                         break;
                     
                     case "6":
@@ -223,5 +224,75 @@ namespace MyApp // Note: actual namespace depends on the project name.
             }
         }
 
+        private static void Relacion()
+        {
+            Console.WriteLine("===================================");
+            Console.WriteLine("1. Desplegar información de la película (en base a la venta)");
+            Console.WriteLine("2. Desplegar información de la venta (en base a a la película)");
+            Console.WriteLine("===================================\n");
+            Console.Write("Seleccione una opción: ");
+            string opcion = Console.ReadLine();
+
+            switch (opcion)
+            {
+                case "1":
+                    Console.Write("Ingrese nombre de un cliente: ");
+                    string nomclient = Console.ReadLine();
+                    ListarVentas(SalesCollection.Find(s => s.Nombre_cliente.Contains(nomclient)).ToList());
+                    Console.WriteLine("Información de la película:\n");
+                    var ventasCliente = SalesCollection.Find(s => s.Nombre_cliente.Contains(nomclient)).ToList();
+                    var peliculasVendidas = MoviesCollection.Find(p => ventasCliente.Select(v => v.Pelicula).Contains(p.Nombre)).ToList();
+                    ListarPeliculas(peliculasVendidas);
+                    break;
+                
+                case "2":
+                    Console.Write("Ingrese nombre de una película: ");
+                    string nompeli = Console.ReadLine();
+                    ListarPeliculas(MoviesCollection.Find(p => p.Nombre.Contains(nompeli)).ToList());
+                    Console.WriteLine("Información de la venta:\n");
+                    var ventasPelicula = SalesCollection.Find(s => s.Pelicula.Contains(nompeli)).ToList();
+                    ListarVentas(ventasPelicula);
+                    break;
+                
+                default:
+                    Console.WriteLine("Opción no válida. Por favor, seleccione una opción válida.");
+                    break;
+            }
+        }
+
+        private static void ActualizarPelicula()
+        {
+            Console.Write("\nIngrese el nombre de la película en la venta: ");
+            string nombrePelicula = Console.ReadLine();
+            ListarVentas(SalesCollection.Find(s => s.Pelicula.Contains(nombrePelicula)).ToList());
+            Console.Write("\nIngrese el nuevo nombre de la película: ");
+            string nuevoNombrePelicula = Console.ReadLine();
+            ActualizarNombrePelicula(SalesCollection, nombrePelicula, nuevoNombrePelicula);
+        }
+
+        private static void ActualizarNombrePelicula(IMongoCollection<VentaBoletos> collection, string nombreAntiguo, string nombreNuevo)
+        {
+            var ventas = collection.Find(s => s.Pelicula.Contains(nombreAntiguo)).ToList();
+
+            foreach (var venta in ventas)
+            {
+                venta.Pelicula = nombreNuevo;
+                collection.ReplaceOne(s => s.Id == venta.Id, venta);
+            }
+        }
+
+        private static void EliminarVentaPelicula()
+        {
+            Console.Write("Ingrese el nombre de la película para eliminar su venta: ");
+            string nombrePelicula = Console.ReadLine();
+            ListarVentas(SalesCollection.Find(s => s.Pelicula.Contains(nombrePelicula)).ToList());
+            EliminarVentaPorPelicula(SalesCollection, nombrePelicula);
+        }
+
+        private static void EliminarVentaPorPelicula(IMongoCollection<VentaBoletos> collection, string nombrePelicula)
+        {
+            collection.DeleteMany(s => s.Pelicula.Contains(nombrePelicula));
+            Console.WriteLine("Venta eliminada correctamente.");
+        }
     }
 }
