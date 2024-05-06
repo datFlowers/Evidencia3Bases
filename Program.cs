@@ -279,6 +279,8 @@ namespace MyApp // Note: actual namespace depends on the project name.
                 venta.Pelicula = nombreNuevo;
                 collection.ReplaceOne(s => s.Id == venta.Id, venta);
             }
+
+            Console.WriteLine("Película actualizada correctamente.");
         }
 
         private static void EliminarVentaPelicula()
