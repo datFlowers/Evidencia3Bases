@@ -164,24 +164,28 @@ namespace MyApp // Note: actual namespace depends on the project name.
             List<Peliculas> peliculasList = MoviesCollection.Find(movie =>true).ToList(); 
             List<VentaBoletos> ventasList = SalesCollection.Find(sales =>true).ToList(); 
 
-            if(peliculasList == null)
+            //Si la colección de películas está vacía, inserta los datos
+            if (MoviesCollection.CountDocuments(FilterDefinition<Peliculas>.Empty) == 0)
             {
                 MoviesCollection.InsertMany(peliculas);
-                Console.WriteLine("Datos ingresados correctamente en la colleción de películas");
+                Console.WriteLine("Datos de películas ingresados correctamente en la colección.");
             }
+            //Si no está vacía, no inserta nada
             else
             {
-                Console.WriteLine("La colección de películas ya cuenta con los datos");
+                Console.WriteLine("La colección de películas ya contiene datos.");
             }
 
-            if(ventasList == null)
+            //Si la colección de ventas está vacía, inserta los datos
+            if (SalesCollection.CountDocuments(FilterDefinition<VentaBoletos>.Empty) == 0)
             {
                 SalesCollection.InsertMany(ventas);
-                Console.WriteLine("Datos ingresados correctamente en la colleción de ventas");
+                Console.WriteLine("Datos de ventas ingresados correctamente en la colección.");
             }
+            //Si no está vacía, no inserta nada
             else
             {
-                Console.WriteLine("La colección de ventas ya cuenta con los datos");
+                Console.WriteLine("La colección de ventas ya contiene datos.");
             }
 
             //Inicio
@@ -469,7 +473,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
                     break;
                 
                 case "2":
-                    //Buscamos le cliente mediante el nombre de la película
+                    //Buscamos el cliente mediante el nombre de la película
                     Console.Write("Ingrese nombre de una película: ");
                     string nompeli = Console.ReadLine();
                     ListarPeliculas(MoviesCollection.Find(p => p.Nombre.Contains(nompeli)).ToList());
@@ -488,20 +492,20 @@ namespace MyApp // Note: actual namespace depends on the project name.
         private static void ActualizarPelicula()
         {
             //Ingresamos el nombre de la película que ya tenemos
-            Console.Write("\nIngrese el nombre de la película en la venta: ");
-            string nombrePelicula = Console.ReadLine();
-            ListarVentas(SalesCollection.Find(s => s.Pelicula.Contains(nombrePelicula)).ToList());
+            Console.Write("\nIngrese el nombre del cliente de la venta: ");
+            string nombreCliente = Console.ReadLine();
+            ListarVentas(SalesCollection.Find(s => s.Nombre_cliente.Contains(nombreCliente)).ToList());
 
             //Ingresamos la nueva película
             Console.Write("\nIngrese la nueva película: ");
             string nuevoNombrePelicula = Console.ReadLine();
-            ActualizarNombrePelicula(SalesCollection, nombrePelicula, nuevoNombrePelicula);
+            ActualizarNombrePelicula(SalesCollection, nombreCliente, nuevoNombrePelicula);
         }
 
         //Clase llamada para actualizar el nombre de la película
-        private static void ActualizarNombrePelicula(IMongoCollection<VentaBoletos> collection, string nombreAntiguo, string nombreNuevo)
+        private static void ActualizarNombrePelicula(IMongoCollection<VentaBoletos> collection, string nombreCliente, string nombreNuevo)
         {
-            var ventas = collection.Find(s => s.Pelicula.Contains(nombreAntiguo)).ToList();
+            var ventas = collection.Find(s => s.Nombre_cliente.Contains(nombreCliente)).ToList();
 
             foreach (var venta in ventas)
             {
@@ -515,16 +519,16 @@ namespace MyApp // Note: actual namespace depends on the project name.
         //Clase para eliminar la venta de alguna película
         private static void EliminarVentaPelicula()
         {
-            Console.Write("Ingrese el nombre de la película para eliminar su venta: ");
-            string nombrePelicula = Console.ReadLine();
-            ListarVentas(SalesCollection.Find(s => s.Pelicula.Contains(nombrePelicula)).ToList());
-            EliminarVentaPorPelicula(SalesCollection, nombrePelicula);
+            Console.Write("Ingrese el nombre del cliente para eliminar su venta: ");
+            string nombreCliente = Console.ReadLine();
+            ListarVentas(SalesCollection.Find(s => s.Nombre_cliente.Contains(nombreCliente)).ToList());
+            EliminarVentaPorPelicula(SalesCollection, nombreCliente);
         }
 
         //Clase que es llamada por la clase anterior para la eliminación de la película
-        private static void EliminarVentaPorPelicula(IMongoCollection<VentaBoletos> collection, string nombrePelicula)
+        private static void EliminarVentaPorPelicula(IMongoCollection<VentaBoletos> collection, string nombreCliente)
         {
-            collection.DeleteMany(s => s.Pelicula.Contains(nombrePelicula));
+            collection.DeleteMany(s => s.Nombre_cliente.Contains(nombreCliente));
             Console.WriteLine("Venta eliminada correctamente.");
         }
     }
